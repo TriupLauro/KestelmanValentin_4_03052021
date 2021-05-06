@@ -226,12 +226,12 @@ input {
 .formData[data-error-visible="true"] .text-control {
   border: 2px solid #e54858;
 }
-/* 
-input[data-error]::after {
+
+/* input[data-error]::after {
     content: attr(data-error);
     font-size: 0.4em;
     color: red;
-} */
+}  */
 .checkbox-label,
 .checkbox2-label {
   position: relative;
@@ -448,7 +448,8 @@ input[data-error]::after {
 }
 .btn-signup {
   outline: none;
-  text-transform: capitalize;
+  /* We want to prevent the "m'" to be uppercase*/
+  /*text-transform: capitalize;*/
   font-size: 1.3rem;
   padding: 15px 23px;
   margin: 0;

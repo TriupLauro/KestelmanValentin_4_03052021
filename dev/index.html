@@ -41,14 +41,14 @@
             aux réservations... Places limitées !
           </p>
           <button class="btn-signup modal-btn">
-            je m'inscris
+            Je m'inscris
           </button>
         </div>
         <div class="hero-img">
           <img src="./bg_img.jpg" alt="img" />
         </div>
         <button class="btn-signup modal-btn">
-          je m'inscris
+          Je m'inscris
         </button>
       </div>
 
@@ -56,10 +56,12 @@
         <div class="content">
           <span class="close"></span>
           <div class="modal-body">
+            <!-- The novalidate attribute prevents automatic HTML validation-->
             <form
+              novalidate 
               name="reserve"
               action="index.html"
-              method="get"
+              method="GET"
               onsubmit="return validate();"
             >
               <div
@@ -70,8 +72,8 @@
                   type="text"
                   id="first"
                   name="first"
-                  minlength="2"
-                  required
+                  
+                  
                 /><br>
               </div>
               <div
@@ -82,8 +84,8 @@
                   type="text"
                   id="last"
                   name="last"
-                  minlength="2"
-                  required
+                  
+                  
                 /><br>
               </div>
               <div
@@ -94,7 +96,7 @@
                   type="email"
                   id="email"
                   name="email"
-                  required
+                  
                 /><br>
               </div>
               <div
@@ -105,13 +107,13 @@
                   type="date"
                   id="birthdate"
                   name="birthdate"
-                  required
+                  
                 /><br>
               </div>
               <div
                 class="formData">
                 <label for="quantity">À combien de tournois GameOn avez-vous déjà participé ?</label><br>
-                <input type="number" class="text-control" id="quantity" name="quantity" min="0" max="99" required>
+                <input type="number" class="text-control" id="quantity" name="quantity" min="0">
               </div>
               <p class="text-label">Quelles villes ?</p>
               <div
@@ -122,7 +124,7 @@
                   id="location1"
                   name="location"
                   value="New York"
-                  required
+                  
                 />
                 <label class="checkbox-label" for="location1">
                   <span class="checkbox-icon"></span>
@@ -191,9 +193,9 @@
                   class="checkbox-input"
                   type="checkbox"
                   id="checkbox1"
-                  required
+                  
                 />
-                <label class="checkbox2-label" for="checkbox1" required>
+                <label class="checkbox2-label" for="checkbox1">
                   <span class="checkbox-icon"></span>
                   J'ai lu et accepté les conditions d'utilisation.
                 </label>
