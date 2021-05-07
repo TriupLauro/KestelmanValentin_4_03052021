@@ -35,14 +35,14 @@ function validEmailRegex(value) {
   return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(value);
 }
 
-// Using validation API to validate e-mail
+// Using validation API to validate e-mail, in this version emailElt is actually the parent of the input tag, so emailElt.children is necessary
 function validEmail(emailElt) {
   // Abort if empty
-  if (emailElt.value == "") {
+  if (emailElt.children.email.value == "") { //emailElt.value == "" <- When entering the input element directly
     return false;
   }
   // typeMismatch return true if there's an error, so we're returning the opposite
-  return !emailElt.validity.typeMismatch;
+  return !emailElt.children.email.validity.typeMismatch; // emailElt.validity.typeMismatch <- When using the input element directly
 }
 
 // DOM Elements
@@ -81,30 +81,64 @@ function closeModal() {
   modalbg.style.display = "none";
 }
 
+// About the error messages displays
+// The error message itself goes into the "data-error" attribute of the corresponding form
+// In order to toggle visibility of the errpr message, set the "data-error-visible" attribute to true
+function setErrorMsg(errorMsg = "", target) {
+    target.setAttribute("data-error", errorMsg);
+    target.setAttribute("data-error-visible", "true"); 
+}
 
+function removeErrorMsg(target) {
+    target.removeAttribute("data-error");
+    target.setAttribute("data-error-visible", "false");
+}
+
+// Class containing the input
+class FormDataObject {
+  constructor (formBlock, inputValue) { //,validationMethod, validationArgument) {
+    this.formBlock = formBlock;
+    this.inputValue = inputValue;
+    //this.validationMethod = validationMethod;
+  }
+
+  removeError() {
+    removeErrorMsg(this.formBlock);
+  }
+
+  displayError(errorMsg = "") {
+    setErrorMsg(errorMsg, this.formBlock);
+  }
+}
 
 // Validation, function called onsubmit in html
 // For each validation check the first block correspond to a valid input
 // The second one to an invalid input
-
-// About the error messages displays
-// The error message itself goes into the "data-error" attribute of the corresponding form
-// In order to toggle visibility of the errpr message, set the "data-error-visible" attribute to true
 function validate() {
   
-  // Validating the first name
-  let firstNameValue = firstName.value;
-  if (twoCharsAtLeast(firstNameValue)) {
-    // valid
-    formData[0].removeAttribute("data-error");
-    formData[0].setAttribute("data-error-visible", "false");
+  // Validating the first name without using the class
+  const firstNameData = new FormDataObject(formData[0], firstName.value);
+  
+  if (twoCharsAtLeast(firstNameData.inputValue)) {
+    // Valid
+    firstNameData.removeError();
   } else {
-    // invalid
-    formData[0].setAttribute("data-error", "Veuillez entrer au moins deux caractères");
-    formData[0].setAttribute("data-error-visible", "true");
+    firstNameData.displayError("Veuillez entrer au moins deux caractères");
     return false;
   }
 
+  // Without the class
+  let firstNameValue = firstName.value;
+  // if (twoCharsAtLeast(firstNameValue)) {
+  //   // valid
+  //   removeErrorMsg(formData[0]);
+  // } else {
+  //   // invalid
+  //   setErrorMsg("Veuillez entrer au moins deux caractères", formData[0]);
+  //   return false;
+  // }
+
+  // Same result, explicit method
   // Validating the last name (same rules, so same validation function)
   let lastNameValue = lastName.value;
   if (twoCharsAtLeast(lastNameValue)) {
@@ -120,14 +154,23 @@ function validate() {
 
   // Validating email
   // Abort if empty
-  if (validEmail(email)) {
-    formData[2].removeAttribute("data-error");
-    formData[2].setAttribute("data-error-visible", "false");
+  const emailData = new FormDataObject(formData[2], email.value);
+  
+  if (validEmail(emailData.formBlock)) {
+    emailData.removeError();
   } else {
-    formData[2].setAttribute("data-error", "Veuillez renseigner votre adresse e-mail");
-    formData[2].setAttribute("data-error-visible", "true");
+    emailData.displayError("Veuillez renseigner une adresse e-mail valide");
     return false;
   }
+  
+  // if (validEmail(email)) {
+  //   formData[2].removeAttribute("data-error");
+  //   formData[2].setAttribute("data-error-visible", "false");
+  // } else {
+  //   formData[2].setAttribute("data-error", "Veuillez renseigner votre adresse e-mail");
+  //   formData[2].setAttribute("data-error-visible", "true");
+  //   return false;
+  // }
 
   // if (email.value == "") {
   //   console.log("email non renseigné");
