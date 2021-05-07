@@ -19,10 +19,10 @@ function oneDigitAtLeast(value) {
 }
 
 // Go trhought a least of radio inputs and returns true if one is checked
-function oneRadioCheckedAtLeast(array) {
+function citySelected(array) {
   for (var i = 0; i < array.length; i++) {
     if (array[i].checked  == true) {
-      return true;
+      return array[i].value;
     }
   }
   return false;
@@ -169,7 +169,8 @@ function validate() {
   }
 
   // Check if one location option is selected
-  if (oneRadioCheckedAtLeast(cityRadio)) {
+  let cityChosen = citySelected(cityRadio);
+  if (cityChosen != false) {
     formData[5].removeAttribute("data-error");
     formData[5].setAttribute("data-error-visible", "false");
   } else {
@@ -189,6 +190,16 @@ function validate() {
   }
 
   //All checks passed !
+  // Storing data in an object
+  let inputDataObject = {
+    firstName : firstNameValue,
+    lastName : lastNameValue,
+    email : email.value,
+    birthday : birth.value,
+    pastContestNumber : contestNumber,
+    city : cityChosen
+  };
+  console.log("Validation terminée");
 }
 
 
