@@ -13,16 +13,17 @@ function twoCharsAtLeast(value) {
   return /\S{2,}/.test(value);
 }
 
-// Retunr true if one digit or more (only digits)
+// Return true if one digit or more (only digits)
 function oneDigitAtLeast(value) {
   return /\d+/.test(value);
 }
 
-// Go trhought a least of radio inputs and returns true if one is checked
+// Go trhought a least of radio inputs and returns the city checked if there's one
+// return false is there's none
 function citySelected(array) {
-  for (var i = 0; i < array.length; i++) {
-    if (array[i].checked  == true) {
-      return array[i].value;
+  for (cityChoice of array) {
+    if (cityChoice.checked  == true) {
+      return cityChoice.value;
     }
   }
   return false;
@@ -38,11 +39,11 @@ function validEmailRegex(value) {
 // Using validation API to validate e-mail, in this version emailElt is actually the parent of the input tag, so emailElt.children is necessary
 function validEmail(emailElt) {
   // Abort if empty
-  if (emailElt.children.email.value == "") { //emailElt.value == "" <- When entering the input element directly
+  if (emailElt.inputValue == "") {
     return false;
   }
   // typeMismatch return true if there's an error, so we're returning the opposite
-  return !emailElt.children.email.validity.typeMismatch; // emailElt.validity.typeMismatch <- When using the input element directly
+  return !emailElt.inputBlock.typeMismatch; 
 }
 
 // DOM Elements
@@ -52,6 +53,7 @@ const formData = document.querySelectorAll(".formData");
 // "X" close button (close modal)
 const closeBtn = document.querySelector("span.close");
 // First and last name input
+// Used for non class objects (not used anymore)
 const firstName = document.getElementById("first");
 const lastName = document.getElementById("last");
 // E-mail input
@@ -95,11 +97,19 @@ function removeErrorMsg(target) {
 }
 
 // Class containing the input
+// FormBlock is the parent block
+// inputList is the list of input elements contained
+// 1 if text input, more if multiple choice checkbox
+// If there is only one, the value of the text input is stored in inputValue
 class FormDataObject {
-  constructor (formBlock, inputValue) { //,validationMethod, validationArgument) {
+  constructor (formBlock) {
     this.formBlock = formBlock;
-    this.inputValue = inputValue;
-    //this.validationMethod = validationMethod;
+    this.inputList = formBlock.getElementsByTagName("input");
+    // Get the input value, excluding multiple choices input
+    if (this.inputList.length == 1) {
+      this.inputBlock = this.inputList[0];
+      this.inputValue = this.inputBlock.value;
+    }
   }
 
   removeError() {
@@ -116,19 +126,33 @@ class FormDataObject {
 // The second one to an invalid input
 function validate() {
   
-  // Validating the first name without using the class
-  const firstNameData = new FormDataObject(formData[0], firstName.value);
+  // Getting all the input object and value thanks to the class FormDataObject
+  // The class assign to each object the parent block ()
+  let formObjectList = [];
+  for (formBlockElt of formData) {
+    formObjectList.push(new FormDataObject(formBlockElt));
+  }
+  // Elements in order :
+  // 0 : First Name
+  // 1 : Last Name
+  // 2 : e-mail
+  // 3 : birthdate
+  // 4 : number of past contest
+  // 5 : city
+  // 6 : TOS and newsletter check
   
-  if (twoCharsAtLeast(firstNameData.inputValue)) {
+  // First Name
+  if (twoCharsAtLeast(formObjectList[0].inputValue)) {
     // Valid
-    firstNameData.removeError();
+    formObjectList[0].removeError();
   } else {
-    firstNameData.displayError("Veuillez entrer au moins deux caractères");
+    // Invalid
+    formObjectList[0].displayError("Veuillez entrer au moins deux caractères");
     return false;
   }
 
   // Without the class
-  let firstNameValue = firstName.value;
+  // let firstNameValue = firstName.value;
   // if (twoCharsAtLeast(firstNameValue)) {
   //   // valid
   //   removeErrorMsg(formData[0]);
@@ -140,26 +164,33 @@ function validate() {
 
   // Same result, explicit method
   // Validating the last name (same rules, so same validation function)
-  let lastNameValue = lastName.value;
-  if (twoCharsAtLeast(lastNameValue)) {
-    // valid
-    formData[1].removeAttribute("data-error");
-    formData[1].setAttribute("data-error-visible", "false");
+  // let lastNameValue = lastName.value;
+  // if (twoCharsAtLeast(lastNameValue)) {
+  //   // valid
+  //   formData[1].removeAttribute("data-error");
+  //   formData[1].setAttribute("data-error-visible", "false");
+  // } else {
+  //   // invalid
+  //   formData[1].setAttribute("data-error", "Veuillez entrer au moins deux caractères");
+  //   formData[1].setAttribute("data-error-visible", "true");
+  //   return false;
+  // }
+
+  // Last Name
+  if (twoCharsAtLeast(formObjectList[1].inputValue)) {
+    // Valid
+    formObjectList[1].removeError();
   } else {
-    // invalid
-    formData[1].setAttribute("data-error", "Veuillez entrer au moins deux caractères");
-    formData[1].setAttribute("data-error-visible", "true");
+    // Invalid
+    formObjectList[1].displayError("Veuillez entrer au moins deux caractères");
     return false;
   }
 
   // Validating email
-  // Abort if empty
-  const emailData = new FormDataObject(formData[2], email.value);
-  
-  if (validEmail(emailData.formBlock)) {
-    emailData.removeError();
+  if (validEmail(formObjectList[2])) {
+    formObjectList[2].removeError();
   } else {
-    emailData.displayError("Veuillez renseigner une adresse e-mail valide");
+    formObjectList[2].displayError("Veuillez renseigner une adresse e-mail valide");
     return false;
   }
   
@@ -192,55 +223,47 @@ function validate() {
   // }
 
   // Check if date as been entered
-  if (birth.value != "") {
-    formData[3].removeAttribute("data-error");
-    formData[3].setAttribute("data-error-visible", "false");
+  if (formObjectList[3].inputValue != "") {
+    formObjectList[3].removeError();
   } else {
-    formData[3].setAttribute("data-error", "Veuillez renseigner votre date de naissance");
-    formData[3].setAttribute("data-error-visible", "true");
+    formObjectList[3].displayError("Veuillez renseigner votre date de naissance");
     return false;
   }
+    
   // Validate past contest number
-  let contestNumber = quantity.value;
-  if (oneDigitAtLeast(contestNumber) && (contestNumber != "")) {
-    formData[4].removeAttribute("data-error");
-    formData[4].setAttribute("data-error-visible", "false");
+  if (oneDigitAtLeast(formObjectList[4].inputValue) && (formObjectList[4].inputValue != "")) {
+    formObjectList[4].removeError();
   } else { 
-    formData[4].setAttribute("data-error", "Veuillez entrer un nombre");
-    formData[4].setAttribute("data-error-visible", "true");
+    formObjectList[4].displayError("Veuillez entrer un nombre");
     return false;
   }
 
   // Check if one location option is selected
-  let cityChosen = citySelected(cityRadio);
-  if (cityChosen != false) {
-    formData[5].removeAttribute("data-error");
-    formData[5].setAttribute("data-error-visible", "false");
+  formObjectList[5].inputValue  = citySelected(formObjectList[5].inputList);
+  if (formObjectList[5].inputValue != false) {
+    formObjectList[5].removeError();
   } else {
-    formData[5].setAttribute("data-error", "Veuillez choisir une ville");
-    formData[5].setAttribute("data-error-visible", "true");
+    formObjectList[5].displayError("Veuillez choisir une ville");
     return false;
   }
 
   // Check if TOS have been approved
-  if (tosCheck.checked == true) {
-    formData[6].removeAttribute("data-error");
-    formData[6].setAttribute("data-error-visible", "false");
+  if (formObjectList[6].inputList[0].checked == true) {
+    formObjectList[6].removeError();
   } else {
-    formData[6].setAttribute("data-error", "Il faut approuver les termes et conditions d'utilisations");
-    formData[6].setAttribute("data-error-visible", "true");
+    formObjectList[6].displayError("Il faut approuver les termes et conditions d'utilisations");
     return false;
   }
 
   //All checks passed !
   // Storing data in an object
   let inputDataObject = {
-    firstName : firstNameValue,
-    lastName : lastNameValue,
-    email : email.value,
-    birthday : birth.value,
-    pastContestNumber : contestNumber,
-    city : cityChosen
+    firstName : formObjectList[0].inputValue,
+    lastName : formObjectList[1].inputValue,
+    email : formObjectList[2].inputValue,
+    birthday : formObjectList[3].inputValue,
+    pastContestNumber : formObjectList[4].inputValue,
+    city : formObjectList[5].inputValue
   };
   console.log("Validation terminée");
 }
