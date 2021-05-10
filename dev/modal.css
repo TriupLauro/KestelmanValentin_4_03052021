@@ -139,6 +139,7 @@ main {
 
 /* Modal form */
 
+/* Second class of the button, so unused */
 .button {
   background: #fe142f;
   margin-top: 0.5em;
@@ -187,6 +188,15 @@ main {
   padding: 15px 8%;
   margin: 15px auto;
 }
+
+/* Message on succesful validation */
+.modal-success {
+  display: none;
+  text-align: center;
+  font-weight: normal;
+  padding: 1rem 0;
+}
+
 
 label {
   font-family: var(--font-default);
@@ -256,8 +266,8 @@ input {
 .checkbox-label .checkbox-icon::after,
 .checkbox2-label .checkbox-icon::after {
   content: "";
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   background-color: #279e7a;
   border-radius: 50%;
   text-indent: 29px;

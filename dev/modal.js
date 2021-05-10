@@ -52,8 +52,14 @@ const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
 // "X" close button (close modal)
 const closeBtn = document.querySelector("span.close");
+// Modal body
+const modalBody = document.querySelector(".modal-body");
+// Success message
+const successMsg = document.querySelector(".modal-success");
+
+
+// Not used anymore
 // First and last name input
-// Used for non class objects (not used anymore)
 const firstName = document.getElementById("first");
 const lastName = document.getElementById("last");
 // E-mail input
@@ -66,6 +72,7 @@ const quantity = document.getElementById("quantity");
 const cityRadio = reserve.location;
 // The TOS checkbox
 const tosCheck = document.getElementById("checkbox1");
+// End of unused DOM objects
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -81,6 +88,13 @@ closeBtn.addEventListener("click", closeModal);
 // close modal form
 function closeModal() {
   modalbg.style.display = "none";
+  resetModal();
+}
+
+// Reset the modal, removes the message displayed on success
+function resetModal() {
+  modalBody.style.display = "block";
+  successMsg.style.display = "none";
 }
 
 // About the error messages displays
@@ -124,8 +138,10 @@ class FormDataObject {
 // Validation, function called onsubmit in html
 // For each validation check the first block correspond to a valid input
 // The second one to an invalid input
-function validate() {
+function validate(evt) {
   
+  // Prevent the form from submitting : going to the page specified in the action attribute (index.html)
+  evt.preventDefault();
   // Getting all the input object and value thanks to the class FormDataObject
   // The class assign to each object the parent block ()
   let formObjectList = [];
@@ -137,7 +153,7 @@ function validate() {
   // 1 : Last Name
   // 2 : e-mail
   // 3 : birthdate
-  // 4 : number of past contest
+  // 4 : number of past contests
   // 5 : city
   // 6 : TOS and newsletter check
   
@@ -250,6 +266,7 @@ function validate() {
   // Check if TOS have been approved
   if (formObjectList[6].inputList[0].checked == true) {
     formObjectList[6].removeError();
+    formObjectList[6].inputValue = formObjectList[6].inputList[1].checked;
   } else {
     formObjectList[6].displayError("Il faut approuver les termes et conditions d'utilisations");
     return false;
@@ -263,9 +280,16 @@ function validate() {
     email : formObjectList[2].inputValue,
     birthday : formObjectList[3].inputValue,
     pastContestNumber : formObjectList[4].inputValue,
-    city : formObjectList[5].inputValue
+    city : formObjectList[5].inputValue,
+    newsletterSubscription : formObjectList[6].inputValue
   };
-  console.log("Validation terminée");
+
+  // Removes the form and display the message
+  modalBody.style.display = "none";
+  successMsg.style.display = "block";
+
+  // Close the modal, resetting it, after 30s
+  setTimeout(closeModal, 30000);
 }
 
 

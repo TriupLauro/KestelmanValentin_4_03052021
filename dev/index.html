@@ -61,8 +61,8 @@
               novalidate 
               name="reserve"
               action="index.html"
-              method="GET"
-              onsubmit="return validate();"
+              method="POST"
+              onsubmit="return validate(event);"
             >
               <div
                 class="formData">
@@ -214,6 +214,11 @@
                 value="C'est parti"
               />
             </form>
+          </div>
+          <!-- Message on succesful validation-->
+          <div class="modal-success">
+            Merci de votre participation. <br>
+            Nous vous contacterons prochainement.
           </div>
         </div>
       </div>
