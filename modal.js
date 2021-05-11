@@ -132,6 +132,9 @@ function resetModal() {
   successMsg.style.display = "none";
 }
 
+// Validation event (submit form)
+reserve.addEventListener("submit", validate);
+
 // About the error messages displays
 // The error message itself goes into the "data-error" attribute of the corresponding form
 // In order to toggle visibility of the errpr message, set the "data-error-visible" attribute to true
@@ -145,6 +148,7 @@ function removeErrorMsg(target) {
     target.setAttribute("data-error-visible", "false");
 }
 
+// Not used anymore
 // Class containing the input
 // FormBlock is the parent block
 // inputList is the list of input elements contained
