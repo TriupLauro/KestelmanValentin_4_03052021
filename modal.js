@@ -23,7 +23,7 @@ function isNotEmptyStringInput(input) {
   return input.value !== "";
 }
 
-// Check that input (useful for multiple choices input, select/radio)
+// Check that input exists (useful for multiple choices input, select/radio)
 function isNotNull(inputBlock) {
   return inputBlock !== null;
 }
